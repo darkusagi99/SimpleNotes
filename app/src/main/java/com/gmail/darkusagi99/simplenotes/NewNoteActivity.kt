@@ -21,11 +21,9 @@ class NewNoteActivity : AppCompatActivity() {
             if (bundle != null) {
                 id = bundle.getInt("ID", 0)
             }
-            if (id!=0){
+            if (id != 0){
                 if (bundle != null) {
                     titleEt.setText(bundle.getString("Title"))
-                }
-                if (bundle != null) {
                     descEt.setText(bundle.getString("Content"))
                 }
             }
@@ -42,22 +40,22 @@ class NewNoteActivity : AppCompatActivity() {
         if (id ==0){
             val ID = dbManager.insert(values)
             if (ID>0){
-                Toast.makeText(this, "Note is added", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Création OK", Toast.LENGTH_SHORT).show()
                 finish()
             }
             else{
-                Toast.makeText(this, "Error adding note...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Erreur lors de la création", Toast.LENGTH_SHORT).show()
             }
         }
         else{
             var selectionArgs = arrayOf(id.toString())
             val ID = dbManager.update(values, "ID=?", selectionArgs)
             if (ID>0){
-                Toast.makeText(this, "Note is added", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Création OK", Toast.LENGTH_SHORT).show()
                 finish()
             }
             else{
-                Toast.makeText(this, "Error adding note...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Erreur lors de la création", Toast.LENGTH_SHORT).show()
             }
         }
     }

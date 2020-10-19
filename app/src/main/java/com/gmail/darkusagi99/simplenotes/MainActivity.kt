@@ -1,10 +1,8 @@
 package com.gmail.darkusagi99.simplenotes
 
 import android.app.SearchManager
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.SearchView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.note.view.*
 
@@ -24,16 +22,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        LoadQuery("%")
+        loadQuery("%")
 
     }
 
     override fun onResume() {
         super.onResume()
-        LoadQuery("%")
+        loadQuery("%")
     }
 
-    private fun LoadQuery(title: String) {
+    private fun loadQuery(title: String) {
         var dbManager = DbManager(this)
         val projections = arrayOf("ID", "Title", "Content")
         val selectionArgs = arrayOf(title)
@@ -62,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val mActionBar = supportActionBar
         if (mActionBar != null) {
             //set to actionbar as subtitle of actionbar
-            mActionBar.subtitle = "You have $total note(s) in list..."
+            mActionBar.title = "$total note(s)"
         }
     }
 
@@ -76,12 +74,12 @@ class MainActivity : AppCompatActivity() {
         sv.setSearchableInfo(sm.getSearchableInfo(componentName))
         sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                LoadQuery("%" + query + "%")
+                loadQuery("%" + query + "%")
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                LoadQuery("%" + newText + "%")
+                loadQuery("%" + newText + "%")
                 return false
             }
         });
@@ -121,23 +119,11 @@ class MainActivity : AppCompatActivity() {
                 var dbManager = DbManager(this.context!!)
                 val selectionArgs = arrayOf(myNote.id.toString())
                 dbManager.delete("ID=?", selectionArgs)
-                LoadQuery("%")
+                loadQuery("%")
             }
             //edit//update button click
             myView.editBtn.setOnClickListener {
                 GoToUpdateFun(myNote)
-            }
-            //copy btn click
-            myView.copyBtn.setOnClickListener {
-                //get title
-                val title = myView.titleTv.text.toString()
-                //get content
-                val desc = myView.contentTv.text.toString()
-                //concatinate
-                val s = title + "\n" + desc
-                val cb = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                cb.text = s // add to clipboard
-                Toast.makeText(this@MainActivity, "Copied...", Toast.LENGTH_SHORT).show()
             }
             //share btn click
             myView.shareBtn.setOnClickListener {
