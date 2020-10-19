@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadQuery(title: String) {
-        var dbManager = DbManager(this)
+        val dbManager = DbManager(this)
         val projections = arrayOf("ID", "Title", "Content")
         val selectionArgs = arrayOf(title)
         val cursor = dbManager.Query(projections, "Title like ?", selectionArgs, "ID")
@@ -44,16 +44,16 @@ class MainActivity : AppCompatActivity() {
 
             do {
                 val id = cursor.getInt(cursor.getColumnIndex("ID"))
-                val title = cursor.getString(cursor.getColumnIndex("Title"))
+                val noteTitle = cursor.getString(cursor.getColumnIndex("Title"))
                 val content = cursor.getString(cursor.getColumnIndex("Content"))
 
-                noteList.add(Note(id, title, content))
+                noteList.add(Note(id, noteTitle, content))
 
             } while (cursor.moveToNext())
         }
 
         //adapter
-        var myNotesAdapter = MyNotesAdapter(this, noteList)
+        val myNotesAdapter = MyNotesAdapter(this, noteList)
         //set adapter
         notesLv.adapter = myNotesAdapter
 
@@ -77,43 +77,36 @@ class MainActivity : AppCompatActivity() {
         sv.setSearchableInfo(sm.getSearchableInfo(componentName))
         sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                loadQuery("%" + query + "%")
+                loadQuery("%$query%")
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                loadQuery("%" + newText + "%")
+                loadQuery("%$newText%")
                 return false
             }
-        });
+        })
 
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item != null) {
-            when (item.itemId) {
-                R.id.addNote -> {
-                    startActivity(Intent(this, NewNoteActivity::class.java))
-                }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.addNote -> {
+                startActivity(Intent(this, NewNoteActivity::class.java))
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    inner class MyNotesAdapter : BaseAdapter {
-        var listNotesAdapter = ArrayList<Note>()
-        var context: Context? = null
-
-        constructor(context: Context, listNotesAdapter: ArrayList<Note>) : super() {
-            this.listNotesAdapter = listNotesAdapter
-            this.context = context
-        }
+    inner class MyNotesAdapter(context: Context, var listNotesAdapter: ArrayList<Note>) :
+        BaseAdapter() {
+        var context: Context? = context
 
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             //inflate layout row.xml
-            var myView = layoutInflater.inflate(R.layout.note, null)
+            val myView = layoutInflater.inflate(R.layout.note, null)
             val myNote = listNotesAdapter[position]
             myView.titleTv.text = myNote.title
             myView.contentTv.text = myNote.content
@@ -124,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                     DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
-                                var dbManager = DbManager(this.context!!)
+                                val dbManager = DbManager(this.context!!)
                                 val selectionArgs = arrayOf(myNote.id.toString())
                                 dbManager.delete("ID=?", selectionArgs)
                                 loadQuery("%")
@@ -170,14 +163,12 @@ class MainActivity : AppCompatActivity() {
             return position.toLong()
         }
 
-        override fun getCount(): Int {
-            return listNotesAdapter.size
-        }
+        override fun getCount(): Int = listNotesAdapter.size
 
     }
 
     private fun GoToUpdateFun(myNote: Note) {
-        var intent = Intent(this, NewNoteActivity::class.java)
+        val intent = Intent(this, NewNoteActivity::class.java)
         intent.putExtra("ID", myNote.id)
         intent.putExtra("name", myNote.title)
         intent.putExtra("des", myNote.content)
