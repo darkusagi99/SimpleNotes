@@ -1,7 +1,9 @@
 package com.gmail.darkusagi99.simplenotes
 
+import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -13,6 +15,7 @@ import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.note.view.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -116,10 +119,25 @@ class MainActivity : AppCompatActivity() {
             myView.contentTv.text = myNote.content
             //delete button click
             myView.deleteBtn.setOnClickListener {
-                var dbManager = DbManager(this.context!!)
-                val selectionArgs = arrayOf(myNote.id.toString())
-                dbManager.delete("ID=?", selectionArgs)
-                loadQuery("%")
+
+                val dialogClickListener =
+                    DialogInterface.OnClickListener { _, which ->
+                        when (which) {
+                            DialogInterface.BUTTON_POSITIVE -> {
+                                var dbManager = DbManager(this.context!!)
+                                val selectionArgs = arrayOf(myNote.id.toString())
+                                dbManager.delete("ID=?", selectionArgs)
+                                loadQuery("%")
+                            }
+                            DialogInterface.BUTTON_NEGATIVE -> {
+                            }
+                        }
+                    }
+                val ab: AlertDialog.Builder = AlertDialog.Builder(this.context)
+                ab.setMessage("Supprimer ?")
+                    .setPositiveButton("Oui", dialogClickListener)
+                    .setNegativeButton("Non", dialogClickListener).show()
+
             }
             //edit//update button click
             myView.editBtn.setOnClickListener {
