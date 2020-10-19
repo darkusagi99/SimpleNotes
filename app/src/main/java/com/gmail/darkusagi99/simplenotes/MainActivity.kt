@@ -170,8 +170,8 @@ class MainActivity : AppCompatActivity() {
     private fun GoToUpdateFun(myNote: Note) {
         val intent = Intent(this, NewNoteActivity::class.java)
         intent.putExtra("ID", myNote.id)
-        intent.putExtra("name", myNote.title)
-        intent.putExtra("des", myNote.content)
+        intent.putExtra("Title", myNote.title)
+        intent.putExtra("Content", myNote.content)
         startActivity(intent) //start activity
     }
 
